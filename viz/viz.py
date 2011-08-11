@@ -9,7 +9,7 @@ import Queue
 
 class PlotPanel(wx.Panel):
     
-    def __init__(self,parent,**kwargs):
+    def __init__(self,parent,yrange=(-3,3),**kwargs):
         from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
         from matplotlib.figure import Figure
         
@@ -25,13 +25,13 @@ class PlotPanel(wx.Panel):
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure )
         
         self.subplot_x = self.figure.add_subplot(311)
-        self.subplot_x.set_ylim((-3,3))   
+        self.subplot_x.set_ylim(yrange)   
         self.subplot_x.set_xticks([])     
         self.subplot_y = self.figure.add_subplot(312)
-        self.subplot_y.set_ylim((-3,3)) 
+        self.subplot_y.set_ylim(yrange) 
         self.subplot_y.set_xticks([])
         self.subplot_z = self.figure.add_subplot(313)
-        self.subplot_z.set_ylim((-3,3))
+        self.subplot_z.set_ylim(yrange)
         self.subplot_z.set_xticks([])
         
         self.dw.winlock.acquire()
@@ -99,8 +99,14 @@ class DataWindow(Thread):
         self.running = False
 
 if __name__ == "__main__":
+    import optparse
+    
+    parser = optparse.OptionParser()
+    parser.add_option("-y","--y",dest="yrange",help="Set the yrange",default=3,type="int")
+    options,args = parser.parse_args()
+    
     app = wx.PySimpleApp( 0 )
     frame = wx.Frame( None, title='WxPython and Matplotlib', size=(300,300) )
-    panel = PlotPanel(frame)
+    panel = PlotPanel(frame,(-options.yrange,options.yrange))
     frame.Show()
     app.MainLoop()
