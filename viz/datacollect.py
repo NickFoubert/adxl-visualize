@@ -19,6 +19,7 @@ class DataCollector(Thread):
                 data = [int(x) for x in input.strip().split(',')]
             except:
                 continue
+            print input.strip()
             self.q.put(data)
         
         ser.close()
