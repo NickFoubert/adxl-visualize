@@ -9,11 +9,11 @@ import Queue
 
 class PlotPanel(wx.Panel):
     
-    def __init__(self,parent,yrange=(-3,3),**kwargs):
+    def __init__(self,parent,data_window,yrange=(-3,3),**kwargs):
         from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
         from matplotlib.figure import Figure
-        
-        self.dw = DataWindow()
+                
+        self.dw = data_window        
         
         # initialize Panel
         if 'style' not in kwargs.keys():
@@ -73,27 +73,27 @@ class PlotPanel(wx.Panel):
         
         
 class DataWindow(Thread):
-    def __init__(self):
+    def __init__(self,data_adapter):
         Thread.__init__(self)
         self.win = N.zeros((100,3))
         self.winlock = Lock()
+        self.data_adapter = data_adapter
     
     def run(self):
-        self.dc = datacollect.DataCollector()
-        self.dc.start()
+        self.data_adapter.start()
         self.running = True
         while self.running:
             self.winlock.acquire()
             try:
                 while 1:
-                    newdata = self.dc.q.get(block=False)
+                    newdata = self.data_adapter.q.get(block=False)
                     self.win[:-1,:] = self.win[1:,:]
-                    self.win[-1,:] = newdata
+                    self.win[-1,:] = newdata[1:]
             except Queue.Empty:
                 pass
             finally:
                 self.winlock.release()
-        self.dc.stop()
+        self.data_adapter.stop()
     
     def stop(self):
         self.running = False
@@ -103,10 +103,15 @@ if __name__ == "__main__":
     
     parser = optparse.OptionParser()
     parser.add_option("-y","--y",dest="yrange",help="Set the yrange",default=3,type="int")
+    parser.add_option("-f","--file",dest="filename",help="File containing data",default=None)
     options,args = parser.parse_args()
     
-    app = wx.PySimpleApp( 0 )
+    app = wx.PySimpleApp(0)
     frame = wx.Frame( None, title='WxPython and Matplotlib', size=(300,300) )
-    panel = PlotPanel(frame,(-options.yrange,options.yrange))
+    if options.filename is not None:
+        data_window = DataWindow(datacollect.FileCollector(options.filename))
+    else:
+        data_window = DataWindow(datacollect.ArduinoCollector())
+    panel = PlotPanel(frame,data_window,(-options.yrange,options.yrange))
     frame.Show()
     app.MainLoop()

@@ -19,6 +19,7 @@ float vcc_mv = 0;
 float scale_factor = 0;
 int vcc = 0;
 int zero_g = 0;
+unsigned long time = 0;
 
 float xbuffer[BUFF_SIZE];
 float ybuffer[BUFF_SIZE];
@@ -60,6 +61,8 @@ void scanSensors() {
   }
   x /= BUFF_SIZE; y /= BUFF_SIZE; z /= BUFF_SIZE;
   
+  Serial.print(time++);
+  Serial.print(',');
   Serial.print(x);
   Serial.print(',');
   Serial.print(y);
