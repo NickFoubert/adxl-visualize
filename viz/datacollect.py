@@ -16,7 +16,7 @@ class DataCollector(Thread):
         while self.running:
             input = ser.readline()
             try:
-                data = [int(x) for x in input.strip().split(',')]
+                data = [float(x) for x in input.strip().split(',')]
             except:
                 continue
             print input.strip()

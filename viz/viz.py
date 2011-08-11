@@ -25,13 +25,13 @@ class PlotPanel(wx.Panel):
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure )
         
         self.subplot_x = self.figure.add_subplot(311)
-        self.subplot_x.set_ylim((-100,100))   
+        self.subplot_x.set_ylim((-3,3))   
         self.subplot_x.set_xticks([])     
         self.subplot_y = self.figure.add_subplot(312)
-        self.subplot_y.set_ylim((-100,100)) 
+        self.subplot_y.set_ylim((-3,3)) 
         self.subplot_y.set_xticks([])
         self.subplot_z = self.figure.add_subplot(313)
-        self.subplot_z.set_ylim((-100,100))
+        self.subplot_z.set_ylim((-3,3))
         self.subplot_z.set_xticks([])
         
         self.dw.winlock.acquire()

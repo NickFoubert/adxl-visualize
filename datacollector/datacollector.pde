@@ -7,11 +7,15 @@ const int ST_PIN = A5;
 const int X_PIN = 2;
 const int Y_PIN = 3;
 const int Z_PIN = 4;
-const int DELAY_TIME = 500;
+const int DELAY_TIME = 1000;
 
-int x = 0;
-int y = 0;
-int z = 0;
+const int mvu = 4.89;
+
+float x = 0;
+float y = 0;
+float z = 0;
+float vcc_mv = 0;
+float scale_factor = 0;
 int vcc = 0;
 int zero_g = 0;
 
@@ -24,13 +28,15 @@ void setup() {
 }
 
 void loop() {
- 
   
   vcc = analogRead(VCC_PIN);
+  vcc_mv = vcc * mvu;
+  scale_factor = 1 / (vcc_mv/10);
   zero_g = vcc / 2;
-  x = analogRead(X_PIN) - zero_g;
-  y = analogRead(Y_PIN) - zero_g;
-  z = analogRead(Z_PIN) - zero_g;
+
+  x = (analogRead(X_PIN) - zero_g) * mvu * scale_factor;
+  y = (analogRead(Y_PIN) - zero_g) * mvu * scale_factor;
+  z = (analogRead(Z_PIN) - zero_g) * mvu * scale_factor;
   
   Serial.print(x);
   Serial.print(',');
