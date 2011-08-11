@@ -1,5 +1,3 @@
-
-
 const int LED_PIN = 13;
 const int VCC_PIN = 0;
 const int GND_PIN = A1;
@@ -9,8 +7,10 @@ const int Y_PIN = 3;
 const int Z_PIN = 4;
 const int DELAY_TIME = 1000;
 const int BUFF_SIZE = 5;
-
+const int SAMPLE_PERIOD = 100; //ms
 const int mvu = 4.89;
+
+float lastscan = 0;
 
 float x = 0;
 float y = 0;
@@ -37,8 +37,7 @@ void setup() {
  }
 }
 
-void loop() {
-  
+void scanSensors() {
   vcc = analogRead(VCC_PIN);
   vcc_mv = vcc * mvu;
   scale_factor = 1 / (vcc_mv/10);
@@ -67,7 +66,10 @@ void loop() {
   Serial.print(',');
   Serial.print(z);
   Serial.println();
-  
-  //delay(DELAY_TIME);
-  
+}
+
+void loop() {
+  while (millis() - lastscan < SAMPLE_PERIOD);
+  scanSensors();
+  lastscan = millis();
 }
